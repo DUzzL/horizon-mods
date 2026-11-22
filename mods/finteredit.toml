@@ -1,0 +1,21 @@
+id = "finteredit"
+kind = "mod"
+name = "finteredit"
+summary = "Wand-style two-point block selection, cuboid fill and undo for Horizon"
+description = "finteredit is a small utility mod for Horizon (Minecraft Java 26.3 rewritten in Rust). Type /wand or //wand to get a wooden axe and reset the selection. With the axe in hand, left-click a block to set the first point, then left-click another block to set the second. The clicked block is not broken; coordinates and block count are printed in chat in dark orange. Use //set <n> to fill the selected cuboid: 0 air, 1 stone, 2 grass_block, 3 dirt, 4 cobblestone, 5:1 oak planks, 5:2 spruce planks, 5:3 birch planks, 5:4 jungle planks, 5:5 acacia planks, 6 bedrock. Use //undo or /undo to revert the last fill."
+authors = ["sinvides"]
+owners = ["sinvides"]
+owner_ids = [162040889]
+license = "MIT"
+source = "https://github.com/sinvides/finteredit"
+icon = "icons/finteredit.png"
+categories = ["game-mechanics", "utility"]
+tags = ["worldedit", "selection", "fill", "building", "axe"]
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-22"
+game = "26.3"
+file = "finteredit-0.1.2.hmod"
+sha256 = "65cc08f3339021e36508bdf1dde5858805f4510fcd9b15c2c7544b5b47854fb5"
+changelog = "0.1.2: added author metadata and MIT license, version bump."
