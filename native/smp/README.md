@@ -427,8 +427,10 @@ a dedicated server with fresh temporary worlds.
 The server runs `horizon-server` as usual, with `[engine] path` pointing at a game built with this mod:
 
 ```sh
-horizon-launcher native-build native/smp --instance "SMP" --trust-native-code
+horizon-launcher native-build native/smp --server-output ./smp-engine --trust-native-code
 ```
 
-builds the mod against the prebuilt game of the commit `horizon-mod.toml` pins. When to deploy it on the official
+exports a standalone dedicated-server engine into `./smp-engine` (point `[engine] path` there), built against the
+prebuilt game of the commit `horizon-mod.toml` pins. It reads and changes no instance; `--instance` is the other
+route, for a client instance's build, and the two flags can't be combined. When to deploy it on the official
 server is the owners' decision.
