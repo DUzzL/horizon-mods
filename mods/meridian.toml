@@ -1,0 +1,60 @@
+id = "meridian"
+kind = "native-mod"
+name = "Meridian"
+summary = "Minimap, world map and waypoints with Seed Atlas built in: biomes, terrain and structures of a world from its seed."
+description = """A minimap, world map and waypoint mod for Horizon, with [Seed Atlas](https://github.com/DUzzL/Seed-Atlas) built in. A native source mod that uses only Horizon's public mod API: no mixins, no game internals.
+
+## Minimap
+
+- Turns with you or stays north up; square or round, several sizes, drag it anywhere on screen ("Minimap Position").
+- Terrain shading, water depth, biome tints, a block grid, cave mode under a roof.
+- Entity radar: players, hostile, passive and tamed mobs, items, each class in its own colour; single kinds can be hidden (`/meridian radar hide <id>`).
+- "Fair Play" switches the radar and cave maps off.
+
+## World map (M)
+
+- Everything you explored, kept per world and dimension; drag to pan, scroll to zoom, Space centres on you.
+- Right click: waypoints, teleport to a spot or a player, share a position, export the map as PNG.
+- Toolbar on the right edge for zoom, centring, waypoints, the seed layer and the settings; "?" lists the controls.
+
+## Waypoints
+
+- B adds one (on the world map at the cursor), U lists them; sets per world, temporary waypoints, death points.
+- Positions shared in chat get a clickable "[Add waypoint]" link.
+- `/meridian waypoint export` and `import` (JSON, or the plain-text waypoint files other map mods keep).
+
+## Seed Atlas
+
+- Fills unexplored areas with the seed's biomes and, from 1.18, its terrain; structure markers with a menu to mark them completed or set a waypoint.
+- Nearest biome and structure search, biome highlighting, every Minecraft version from 1.1 to 26.3.
+- In single player the seed is read from the world; on servers set it with `/seedatlas seed <seed>`. The seed never leaves your computer.
+
+## Keys
+
+M world map, B new waypoint, U waypoint list, Z enlarge the minimap, Y minimap settings, ] world map settings. Everything else is available and unbound; change keys in the game's controls screen.
+
+## Notes
+
+- Client side only.
+- Data lives in `<instance>/horizon-mod-data/meridian`, settings in the game's config folder.
+- Built against Horizon Nightly 2026-11-22 (`f1bb66f`, mixins `e59da90`); native code compiles on your machine with the launcher's Rust and runs with your permissions.
+
+## Credits
+
+Meridian is an independent project: new code, not affiliated with or endorsed by the authors of other map mods, and it contains none of their code or assets. The Seed Atlas engine derives from [cubiomes](https://github.com/Cubitect/cubiomes) (Copyright (c) 2020 Cubitect, MIT); its biome colours are inspired by [Amidst](https://github.com/toolbox4minecraft/amidst) (GPLv3). The Nether cave layer follows Horizon's port of the cave carver. Licence notices are in the package and the source repository."""
+authors = ["DUzzL"]
+owners = ["DUzzL"]
+owner_ids = [98381970]
+license = "GPL-3.0-or-later"
+source = "https://github.com/DUzzL/meridian"
+icon = "icons/meridian.png"
+categories = ["utility", "adventure"]
+tags = ["minimap", "map", "world-map", "waypoints", "radar", "seed", "biomes", "structures", "navigation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-23"
+game = "26.3"
+file = "meridian-0.1.0.hmod"
+sha256 = "c596c526f936ca35d5aba0f6e55b80dacdfd643f3d8cfc766676381f688b9c1b"
+changelog = "First release on Horizon's public mod API (Nightly 2026-11-22, f1bb66f)."
