@@ -294,9 +294,20 @@ mod tests {
         ];
         let tag = read_network(legacy).expect("reads");
         let Tag::Compound(root) = &tag else { panic!() };
-        let list = root.iter().find(|(k, _)| k.0 == [u16::from(b'l')]).unwrap().1;
-        assert_eq!(list, &Tag::List(vec![Tag::Int(5), java_string(vec![104, 105])]));
-        let s = root.iter().find(|(k, _)| k.0 == [u16::from(b's')]).unwrap().1;
+        let list = root
+            .iter()
+            .find(|(k, _)| k.0 == [u16::from(b'l')])
+            .unwrap()
+            .1;
+        assert_eq!(
+            list,
+            &Tag::List(vec![Tag::Int(5), java_string(vec![104, 105])])
+        );
+        let s = root
+            .iter()
+            .find(|(k, _)| k.0 == [u16::from(b's')])
+            .unwrap()
+            .1;
         assert_eq!(s, &java_string(vec![0xD800]));
         // Written back, the bytes are the ones the game's writer makes.
         assert_eq!(write_network(&tag).as_deref(), Some(legacy));
