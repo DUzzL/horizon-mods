@@ -28,6 +28,18 @@ fn utf(out: &mut Vec<u8>, units: &[u16]) -> bool {
     true
 }
 
+fn is_wrapper(tag: &Tag) -> bool {
+    matches!(tag, Tag::Compound(c) if c.len() == 1 && c.keys().all(|k| k.0.is_empty()))
+}
+
+fn java_string(units: Vec<u16>) -> Tag {
+    let mut tag = Tag::String(Default::default());
+    if let Tag::String(s) = &mut tag {
+        s.0 = units;
+    }
+    tag
+}
+
 fn write_payload(tag: &Tag, out: &mut Vec<u8>, depth: usize) -> bool {
     if depth > MAX_DEPTH {
         return false;
@@ -50,10 +62,27 @@ fn write_payload(tag: &Tag, out: &mut Vec<u8>, depth: usize) -> bool {
             }
         }
         Tag::List(items) => {
-            out.push(items.first().map_or(0, Tag::id));
+            if items.iter().any(|t| matches!(t, Tag::End)) {
+                return false;
+            }
+            let first = items.first().map_or(0, Tag::id);
+            // 26.3's mixed lists: the element type is compound and each element that isn't one (or that looks
+            // like a wrapper itself) is carried in a one-entry compound with an empty name.
+            let mixed = items.iter().any(|t| t.id() != first);
+            out.push(if mixed { 10 } else { first });
             out.extend((items.len() as i32).to_be_bytes());
             for t in items {
-                if t.id() != items[0].id() || !write_payload(t, out, depth + 1) {
+                if mixed && (t.id() != 10 || is_wrapper(t)) {
+                    if depth + 1 >= MAX_DEPTH {
+                        return false;
+                    }
+                    out.push(t.id());
+                    out.extend(0u16.to_be_bytes());
+                    if !write_payload(t, out, depth + 2) {
+                        return false;
+                    }
+                    out.push(0);
+                } else if !write_payload(t, out, depth + 1) {
                     return false;
                 }
             }
@@ -149,7 +178,7 @@ impl Reader<'_> {
                 let n = self.len()?;
                 Tag::ByteArray(self.take(n)?.to_vec())
             }
-            8 => Tag::String(String::from_utf16_lossy(&self.string()?).as_str().into()),
+            8 => java_string(self.string()?),
             9 => {
                 let [kind] = self.array()?;
                 let n = self.len()?;
@@ -158,7 +187,14 @@ impl Reader<'_> {
                 }
                 let mut items = Vec::new();
                 for _ in 0..n {
-                    items.push(self.payload(kind, depth + 1)?);
+                    let mut item = self.payload(kind, depth + 1)?;
+                    if kind == 10 && is_wrapper(&item) {
+                        let Tag::Compound(mut c) = item else {
+                            return None;
+                        };
+                        item = c.pop_first()?.1;
+                    }
+                    items.push(item);
                 }
                 Tag::List(items)
             }
@@ -171,7 +207,10 @@ impl Reader<'_> {
                     }
                     let name = self.string()?;
                     let value = self.payload(kind, depth + 1)?;
-                    map.insert(String::from_utf16_lossy(&name).as_str().into(), value);
+                    let Tag::String(key) = java_string(name) else {
+                        return None;
+                    };
+                    map.insert(key, value);
                 }
                 Tag::Compound(map)
             }
@@ -239,6 +278,28 @@ mod tests {
             write_network(&read_network(java).unwrap()).as_deref(),
             Some(java)
         );
+    }
+
+    /// Bytes laid out by hand as the engine's network writer lays them (horizon-core `nbt.rs`): a mixed list is a
+    /// list of compounds, each non-compound carried under an empty name, and strings keep lone surrogates.
+    #[test]
+    fn legacy_mixed_lists_and_raw_code_units_survive_a_round_trip() {
+        let legacy: &[u8] = &[
+            10, // root compound
+            9, 0, 1, b'l', 10, 0, 0, 0, 2, // list of 2 compounds
+            3, 0, 0, 0, 0, 0, 5, 0, // { "": Int 5 }
+            8, 0, 0, 0, 2, b'h', b'i', 0, // { "": String "hi" }
+            8, 0, 1, b's', 0, 3, 0xED, 0xA0, 0x80, // "s": lone surrogate U+D800
+            0,
+        ];
+        let tag = read_network(legacy).expect("reads");
+        let Tag::Compound(root) = &tag else { panic!() };
+        let list = root.iter().find(|(k, _)| k.0 == [u16::from(b'l')]).unwrap().1;
+        assert_eq!(list, &Tag::List(vec![Tag::Int(5), java_string(vec![104, 105])]));
+        let s = root.iter().find(|(k, _)| k.0 == [u16::from(b's')]).unwrap().1;
+        assert_eq!(s, &java_string(vec![0xD800]));
+        // Written back, the bytes are the ones the game's writer makes.
+        assert_eq!(write_network(&tag).as_deref(), Some(legacy));
     }
 
     #[test]
