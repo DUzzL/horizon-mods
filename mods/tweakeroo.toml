@@ -1,0 +1,43 @@
+id = "tweakeroo"
+kind = "native-mod"
+name = "Tweakeroo"
+summary = "Unofficial Rust port of Tweakeroo: client-side tweaks with the original MaLiLib configuration menu. Work in progress."
+description = """
+An unofficial port of [Tweakeroo](https://github.com/sakura-ryoko/tweakeroo) by masa, sakura-ryoko and contributors (with its [MaLiLib](https://github.com/sakura-ryoko/malilib) menu) to Horizon, rewritten in Rust. Not an official release and not endorsed by the original authors.
+
+**Work in progress.** Every Tweakeroo option is in the menu, but only part of them is ported so far; the [port ledger](https://github.com/DUzzL/tweakeroo-horizon/blob/main/docs/PORT_LEDGER.md) lists which.
+
+## Ported
+
+- The configuration menu (X + C), with its tabs, search, hotkey chords and the original translations; settings in `config/tweakeroo.json`, compatible with the Fabric file.
+- Free camera (with presets), permanent sneak, zoom with scroll adjustment, aim lock and snap aim, fly speed presets.
+- Hold, periodic and fast attack/use (all off by default), hotbar row swap, hand restock, swapping almost broken tools.
+- Breaking restrictions and grid, block type break restriction, no block breaking cooldown.
+- Gamma override; turning off fog, particles, the boss bar, the scoreboard, offhand, entity and dead mob rendering.
+- `/tweakeroo config | get | set | bind` (additions of this port).
+
+## Notes
+
+- Client side only. Synthetic clicks go through the game's own attack and use path, with vanilla's checks.
+- A native source mod built against Horizon Nightly 2026-11-22 (`f1bb66f`) and horizon-mixins `e59da90`. It uses Horizon's mod API and two small mixins where the API has no route (gamma and the breaking cooldown; the mouse look while the free camera or aim lock holds it), so it is made for exactly that build.
+
+## Credits and licence
+
+Tweakeroo and MaLiLib are by masa, sakura-ryoko and their contributors, under LGPL-3.0. Their configuration metadata, translations, menu layout, widget atlas, icon and the adapted algorithms come from those projects; their licence texts and notices are in the package (`NOTICE.md`, `data/tweakeroo/port/*/license.txt`). The Horizon integration is new code. LGPL-3.0-or-later.
+"""
+authors = ["masa", "sakura-ryoko", "DUzzL"]
+owners = ["DUzzL"]
+owner_ids = [98381970]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/DUzzL/tweakeroo-horizon"
+icon = "icons/tweakeroo.png"
+categories = ["utility"]
+tags = ["port", "tweaks", "freecam", "zoom", "client", "malilib", "qol"]
+
+[[versions]]
+version = "0.30.2-horizon.2"
+published = "2026-11-23"
+game = "26.3"
+file = "tweakeroo-0.30.2-horizon.2.hmod"
+sha256 = "1b8937f165ab848031db06e3d43fff1abf3618306f9bdc4b41866ec2a3ee2560"
+changelog = "First release on Horizon's mod API (Nightly 2026-11-22, f1bb66f)."
